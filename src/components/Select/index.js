@@ -36,14 +36,14 @@ const Select = ({
                   Toutes
                 </li>
               )}
-              {selection.map((s) => (
-                <li key={s} onClick={() => changeValue(s)}>
+              {selection.map((index) => (
+                <li key={index} onClick={() => changeValue(index)}>
                   <input
-                    defaultChecked={value === s}
+                    defaultChecked={value === index}
                     name="selected"
                     type="radio"
                   />{" "}
-                  {s}
+                  {index}
                 </li>
               ))}
             </>

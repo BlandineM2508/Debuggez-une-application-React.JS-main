@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useData } from "../../contexts/DataContext";
 import { getMonth } from "../../helpers/Date";
 
@@ -22,17 +22,20 @@ const Slider = () => {
   };
   useEffect(() => {
     nextCard();
+    // Maj de la slide suivante
   });
+
+  // events sur les slides
   return (
-    <div className="SlideCardList">
+    <div className="SlideCardList"> 
       {byDateDesc?.map((event, idx) => (
-        <>
-          <div
-            key={event.title}
+       
+       // ajout de fragment 
+        <Fragment key={event.title}>
+          <div   
             className={`SlideCard SlideCard--${
               index === idx ? "display" : "hide"
-            }`}
-          >
+            }`}>
             <img src={event.cover} alt="forum" />
             <div className="SlideCard__descriptionContainer">
               <div className="SlideCard__description">
@@ -55,7 +58,8 @@ const Slider = () => {
               ))}
             </div>
           </div>
-        </>
+          </Fragment>
+      
       ))}
     </div>
   );

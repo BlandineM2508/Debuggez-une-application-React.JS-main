@@ -8,23 +8,50 @@ const mockContactApi = () => new Promise((resolve) => { setTimeout(resolve, 500)
 
 const Form = ({ onSuccess, onError }) => {
   const [sending, setSending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const sendContact = useCallback(
     async (evt) => {
       evt.preventDefault();
       setSending(true);
-      // We try to call mockContactApi
+      setErrorMessage(""); // Reset error message
+
+      const formFields = evt.target.elements;
+      let isAnyFieldEmpty = false;
+
+      for (let i = 0; i < formFields.length; i += 1) {
+        if (formFields[i].nodeName === "INPUT" || formFields[i].nodeName === "TEXTAREA") {
+          if (!formFields[i].value.trim()) {
+            isAnyFieldEmpty = true;
+            break;
+          }
+        }
+      }
+
+      if (isAnyFieldEmpty) {
+        setSending(false);
+        setErrorMessage("Veuillez remplir tous les champs du formulaire");
+        onError();
+        return;
+      }
+
       try {
         await mockContactApi();
         setSending(false);
+        evt.target.reset();
+        onSuccess(); // Appeler onSuccess lorsque l'envoi réussit
       } catch (err) {
         setSending(false);
+        setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
         onError(err);
       }
     },
     [onSuccess, onError]
   );
+
   return (
     <form onSubmit={sendContact}>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div className="row">
         <div className="col">
           <Field placeholder="" label="Nom" />
