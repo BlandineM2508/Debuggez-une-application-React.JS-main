@@ -7,35 +7,32 @@ import "./style.scss";
 const Slider = () => {
   const { data } = useData();
   const [index, setIndex] = useState(0);
+
   const byDateDesc = data?.focus.sort((evtA, evtB) =>
     new Date(evtA.date) < new Date(evtB.date) ? -1 : 1
   );
-  const nextCard = () => {
-    if (byDateDesc) {
-      setTimeout(
-        () => setIndex(index < byDateDesc.length - 1 ? index + 1 : 0),
-        5000
-      );
 
-    }
-    
-  };
   useEffect(() => {
-    nextCard();
-    // Maj de la slide suivante
-  });
+    const timer = setTimeout(() => {
+      setIndex((prevIndex) => (prevIndex < byDateDesc.length - 1 ? prevIndex + 1 : 0));
+    }, 5000);
 
-  // events sur les slides
+    return () => clearTimeout(timer); // Nettoyage du timeout précédent
+  }, [index, byDateDesc]);
+
+  const handleRadioChange = (radioIdx) => {
+    setIndex(radioIdx);
+  };
+
   return (
-    <div className="SlideCardList"> 
+    <div className="SlideCardList">
       {byDateDesc?.map((event, idx) => (
-       
-       // ajout de fragment 
         <Fragment key={event.title}>
-          <div   
+          <div
             className={`SlideCard SlideCard--${
               index === idx ? "display" : "hide"
-            }`}>
+            }`}
+          >
             <img src={event.cover} alt="forum" />
             <div className="SlideCard__descriptionContainer">
               <div className="SlideCard__description">
@@ -45,22 +42,21 @@ const Slider = () => {
               </div>
             </div>
           </div>
-          <div className="SlideCard__paginationContainer">
-            <div className="SlideCard__pagination">
-              {byDateDesc.map((focus, radioIdx) => (
-                <input
-                  key={focus.title}
-                  type="radio"
-                  name="radio-button"
-                  checked={index === radioIdx}
-                  readOnly
-                />
-              ))}
-            </div>
-          </div>
-          </Fragment>
-      
+        </Fragment>
       ))}
+      <div className="SlideCard__paginationContainer">
+        <div className="SlideCard__pagination">
+          {byDateDesc?.map((focus, radioIdx) => (
+            <input
+              key={focus.title}
+              type="radio"
+              name="radio-button"
+              checked={index === radioIdx}
+              onChange={() => handleRadioChange(radioIdx)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
